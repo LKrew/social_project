@@ -3,7 +3,9 @@
 
 {% block profile %}
     <h1>@{{post_user.username}}</h1>
-    <p>BIO HERE</p>
+    <p>{{user.userprofile.pronouns}}</p>
+    <p>{{user.userprofile.bio}}</p>
+    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-dark">edit profile</a>
 {% endblock profile %}
     
 
