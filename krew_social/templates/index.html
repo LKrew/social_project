@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex flex-column">
+    <div class="row flex-grow-1">
+        <div class="col-md-3">
+            <div class="jumbo">
+                
+                {% block profile %}
+                <h1>Welcome to the Krew</h1>
+                <p>The Krew was built using python and the django</p>
+                {% endblock profile %}
+                
+            </div>
+        </div>
+        <div class="col-md-9">
+            
+            {% block post_conten %}
+                
+            {% endblock post_conten %}
+                
+        </div>
+    </div>
+</div>
+{% endblock content %}
+    

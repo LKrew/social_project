@@ -1,0 +1,28 @@
+<div class="post media">
+    <div class="jumbotron">
+        <h5 class="media-heading">
+        <span class="username">
+            <a href="{% url 'posts:profile' username=comment.author.username %}">@{{comment}.author.username}}</a>
+        </span>
+        <span class="post_content">{{comment.text}}</span>
+        </h5>
+        <time class="time">
+            <p>{{comment.created_at}}</p>
+        </time>
+        {% if user in post.likes.all %}
+					<a href="{% url 'posts:unlike_comment' pk=post.pk %}" class="btn btn-sm btn-fill btn-primary"><span class="glyphicon glyphicon-remove-circle"></span>Unlike</a>
+				{% else %}
+					<a href="{% url 'posts:like_comment' pk=post.pk %}" class="btn btn-sm btn-fill btn-primary"><span class="glyphicon glyphicon-ok-circle"></span>Like</a>
+				{% endif %}
+        
+        {% if user.is_authenticated and post.author == user %}
+        <a href="{% url 'posts:delete_comment' pk=post.pk %}" class="btn btn-default">
+            delete post
+        </a>
+        {% endif %}
+            
+        
+    
+        
+    </div>
+</div>
