@@ -13,6 +13,9 @@ class NewUserForm(UserCreationForm):
 
 class UserProfileForm(forms.Form):
     class Meta:
-        model = get_user_model
-        fields = ['bio', ]
+        model = get_user_model()
+        fields = ['bio', 'pronouns']
+    def __init__(self, *args, **kwargs):
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+
     

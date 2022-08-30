@@ -1,8 +1,5 @@
-
-from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView, DeleteView, DetailView
 from posts import models
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy, reverse
