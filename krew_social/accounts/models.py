@@ -1,5 +1,3 @@
-from random import choices
-from tkinter import CASCADE
 from django.contrib import auth
 from django.db import models
 from django.contrib.auth import get_user_model
