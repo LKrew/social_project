@@ -8,7 +8,7 @@ from .models import UserProfile
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
+        UserProfile.objects.create(pk=instance.id, user=instance)
 
 
 @receiver(post_save, sender=User)

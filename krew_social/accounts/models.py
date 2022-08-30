@@ -9,9 +9,9 @@ class User(auth.models.User, auth.models.PermissionsMixin):
         return "@{}".format(self.username)
 
 class UserProfile(models.Model):
-    MALE = 'male'
-    FEMALE = 'female'
-    NONBINARY = 'nonbinary'
+    MALE = 'he/him'
+    FEMALE = 'she/her'
+    NONBINARY = 'they/them'
     NONE = ''
     pronouns_choices = [
                         (MALE,'he/him'),
