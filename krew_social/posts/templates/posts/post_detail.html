@@ -3,6 +3,15 @@
 
 {% block profile %}
     {% include "posts/_post.html" %}
+    <hr>
+    <h5>Liked By: </h5>
+    
+    {% for user in post.likes.all %}
+    <ul>
+       <li>{% include "posts/_user.html" %}</li>
+    </ul>
+    {% endfor %}
+        
 {% endblock profile %}
     
 

@@ -10,6 +10,14 @@ a.nav-link .dropdown-toggle{
     border-radius: .3rem;
     width: 75% !important;
   }
+.jumbotron2 {
+margin: auto;
+padding: 2rem 1rem;
+margin-top: 2rem;
+background-color: grey;
+border-radius: .3rem;
+color: white;
+}
 body{
     padding-top: 0px;
 }
@@ -19,6 +27,11 @@ body{
 
 .post_content{
     color: black;
+    text-decoration: none;
+}
+
+.username{
+    color: white;
     text-decoration: none !important;
 }
 

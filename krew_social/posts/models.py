@@ -16,15 +16,11 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return self.message
-
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
     
     def get_absolute_url(self):
         return reverse(
             "posts:posts"
         )
-
     class Meta:
         ordering = ['-created_at']
 
@@ -36,8 +32,6 @@ class LikedPost(models.Model):
 
     def __str__(self):
         return self.post.message + " liked by " + self.user.username
-
-
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments',on_delete=models.CASCADE)

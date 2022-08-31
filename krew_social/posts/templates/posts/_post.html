@@ -2,12 +2,17 @@
     <div class="jumbotron">
         <h5 class="media-heading">
         <span class="username">
-            <a href="{% url 'posts:profile' username=post.author.username %}">@{{post.author.username}}</a>
+            <a href="{% url 'posts:profile' username=post.author.username %}" class="username">@{{post.author.username}}</a>
         </span>        
-        <a href="{% url 'posts:single' pk=post.pk %}">
-            <span class="post_content">{{post.message}}</span>
-        </a>
         </h5>
+        <div class="container">
+            <p>
+                <a href="{% url 'posts:single' pk=post.pk %}" class="post_content">
+                    <span class="post_content">{{post.message}}</span>
+                </a>
+            </p>
+        </div>
+        
         <time class="time">
             <p>{{post.created_at}}</p>
         </time>
@@ -17,12 +22,12 @@
                 {% if user in post.likes.all %}
                 <form class='form-inline' action="{% url 'posts:unlike' pk=post.pk %}"  method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="nav-link btn btn-outline-dark" name="post_pk" value="{{post.pk}}">Unlike {{post.likes.count}}</button>
+                    <button type="submit" class="nav-link btn btn-outline-dark" name="post_pk" value="{{post.pk}}">Unlike {{post.like_count}}</button>
                 </form>
                 {% else %}
                 <form class='form-inline' action="{% url 'posts:like' pk=post.pk %}"  method="POST">
                     {% csrf_token %}
-                <button type="submit" class="nav-link btn btn-outline-dark" name="post_pk" value="{{post.pk}}">Like {{post.likes.count}}</button>
+                <button type="submit" class="nav-link btn btn-outline-dark" name="post_pk" value="{{post.pk}}">Like {{post.like_count}}</button>
                 </form>
                 {% endif %}
             </form>
