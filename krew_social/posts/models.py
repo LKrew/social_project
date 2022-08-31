@@ -1,6 +1,5 @@
 from django.db import models
 from enum import auto, unique
-from xml.etree.ElementTree import Comment
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 # Create your models here.
@@ -13,6 +12,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
     like_count = models.PositiveIntegerField(default=0)
+    comments_on_post = models.ForeignKey('posts.Comment', related_name='comments_on_post', on_delete=models.CASCADE, null=True)
 
     def __str__(self) -> str:
         return self.message
@@ -35,6 +35,19 @@ class LikedPost(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments',on_delete=models.CASCADE)
-    author = models.CharField(max_length=144)
-    text = models.TextField()
+    author = models.ForeignKey(User, related_name='usercomment', on_delete=models.CASCADE)
+    text = models.TextField(max_length=144)
     created_date = models.DateTimeField(auto_now=True)
+    like_count = models.PositiveIntegerField(default=0)
+    likes = models.ManyToManyField(User, related_name='likes_comment', blank=True)
+
+    def __str__(self):
+        return self.text
+
+class LikedComment(models.Model):
+    user = models.ForeignKey(User, related_name='userlikescomment',on_delete=models.CASCADE)
+    comment = models.ForeignKey('posts.Comment', on_delete=models.CASCADE)
+    liked_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.comment.text + " liked by " + self.user.username

@@ -17,12 +17,9 @@
 
 {% block post_content %}
     
-    
     {% for comment in post.comments.all %}
-        {% include "posts/_comment.html" %}    
+            {% include "posts/_comment.html" %}
     {% endfor %}
-        
-
 
 {% endblock post_content %}
     

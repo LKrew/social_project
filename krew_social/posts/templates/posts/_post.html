@@ -32,9 +32,9 @@
                 {% endif %}
             </form>
             {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a href="#" class="nav-link btn btn-outline-dark">Comment {{post.comments.count}}</a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-outline-dark" href="{% url 'posts:new_comment' pk=post.pk%}">Comment {{post.comments.count}}</a>
+                </li>
             {% endif %}
             <li class="nav-item">
                 {% if user.is_authenticated and post.author == user %}

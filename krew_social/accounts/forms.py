@@ -10,12 +10,3 @@ class NewUserForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['username'].label='username'
         self.fields['email'].label='Email Address'
-
-# class UserProfileForm(forms.Form):
-#     class Meta:
-#         model = get_user_model()
-#         fields = ['bio', 'pronouns']
-#     def __init__(self, *args, **kwargs):
-#         super(UserProfileForm, self).__init__(*args, **kwargs)
-
-    

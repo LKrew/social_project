@@ -2,11 +2,12 @@ from django.views.generic import ListView, CreateView, DeleteView, DetailView
 from posts import models
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.http  import Http404, HttpResponseRedirect
 from braces.views import SelectRelatedMixin
-from . import models
+from . import models, forms
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404, redirect, render
 
 # Create your views here.
 
@@ -56,6 +57,36 @@ class DeletePost(LoginRequiredMixin, DeleteView):
 class SinglePost(LoginRequiredMixin, DetailView):
     model = models.Post
 
+
+# class NewComment(LoginRequiredMixin,CreateView):
+#     fields = ['text']
+#     model = models.Comment
+#     template_name = 'posts/comment_form.html'
+
+#     def form_valid(self, form):
+#         self.object = form.save(commit=False)
+#         print(self.request)
+#         self.object.post = 
+#         form.instance.author = self.request.user
+#         self.object.save()
+#         return super().form_valid(form)
+    
+@login_required
+def new_comment(request, pk):
+    #pk = request.POST.get('pk')
+    post = get_object_or_404(models.Post, pk=pk)
+    if request.method == "POST":
+        form = forms.CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            return redirect('posts:single', pk=post.pk)
+    else:
+        form = forms.CommentForm()
+    return render(request, 'posts/comment_form.html', {'form': form})
+
 @login_required
 def like_post(request, pk):
     if request.method == "POST":
@@ -89,6 +120,43 @@ def unlike_post(request, pk):
         #delete user to Post 
         post.likes.remove(user)
         post.save()
+        newLike.save()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required
+def like_comment(request, pk):
+    if request.method == "POST":
+        #make sure user can't like the post more than once. 
+        user = User.objects.get(username=request.user.username)
+        #find whatever post is associated with like
+        comment = models.Comment.objects.get(pk=pk)
+
+        newLike = models.LikedComment(user=user, comment=comment)
+        newLike.alreadyLiked = True
+
+        comment.like_count += 1
+        #adds user to Post 
+        comment.likes.add(user)
+        comment.save()
+        newLike.save()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@login_required
+def unlike_comment(request, pk):
+    if request.method == "POST":
+        #make sure user can't like the post more than once. 
+        user = User.objects.get(username=request.user.username)
+        #find whatever post is associated with like
+        comment = models.Comment.objects.get(pk=pk)
+
+        newLike = models.LikedComment(user=user, comment=comment)
+        newLike.alreadyLiked = True
+
+        comment.like_count -= 1
+        #delete user to Post 
+        comment.likes.remove(user)
+        comment.save()
         newLike.save()
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
