@@ -22,4 +22,4 @@ class UserProfile(models.Model):
     user = models.OneToOneField(U, on_delete=models.CASCADE)
     bio = models.TextField(max_length=144)
     pronouns = models.CharField(max_length=9, choices=pronouns_choices, default='none')
-
+    

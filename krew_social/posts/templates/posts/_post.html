@@ -36,6 +36,10 @@
                     <a class="nav-link btn btn-outline-dark" href="{% url 'posts:new_comment' pk=post.pk%}">Comment {{post.comments.count}}</a>
                 </li>
             {% endif %}
+            <form class='form-inline' action="{% url 'posts:repost' pk=post.pk %}"  method="POST">
+                {% csrf_token %}
+                <button type="submit" class="nav-link btn btn-outline-dark" name="post_pk" value="{{post.pk}}">repost {{post.repost.count}}</button>
+            </form>
             <li class="nav-item">
                 {% if user.is_authenticated and post.author == user %}
                 <a href="{% url 'posts:delete' pk=post.pk %}" class="nav-link btn btn-outline-danger">delete post</a>

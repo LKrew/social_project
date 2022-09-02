@@ -1,0 +1,28 @@
+<div class="jumbotron">
+    <h5>
+       <a href="{% url 'posts:profile' username=repost.author.username %}" class="username">
+        @{{repost.author}}</a>
+        <span class="username">
+            reposted <a class="username" href="{% url 'posts:profile' username=repost.post.author.username %}">@{{repost.post.author.username}}</a>'s post
+        </span>
+    </h5>
+    <a class="btn-outline-dark repost" href="{% url 'posts:single' pk=repost.post.pk %}">
+        <div class="jumbotron2">
+            <h5 class="media-heading">
+                <span class="username">
+                   <span class="username">@{{repost.post.author.username}}</span>
+                </span>        
+            </h5>
+            <p class="post_content">{{repost.post.message}}</p>
+            <time class="time">
+                <p>{{repost.post.created_at}}</p>
+            </time>
+        </div>
+    </a>
+    {% if user.is_authenticated and repost.author == user %}
+        <a href="{% url 'posts:delete_repost' pk=repost.pk %}" class="btn btn-outline-danger">delete repost</a>
+    {% endif %}
+    <time class="time">
+        <p>{{repost.created_at}}</p>
+    </time>
+</div>

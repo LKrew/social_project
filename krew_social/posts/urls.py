@@ -14,4 +14,7 @@ urlpatterns = [
     re_path(r'newcomment/(?P<pk>\d+)/$', views.new_comment, name='new_comment'),
     re_path(r'like/comment/(?P<pk>\d+)/$', views.like_comment, name='like_comment'),
     re_path(r'unlike/comment/(?P<pk>\d+)/$', views.unlike_comment, name='unlike_comment'),
+    re_path(r'delete/comment/(?P<pk>\d+)/$', views.DeleteComment.as_view(), name='delete_comment'),
+    re_path(r'post/repost/(?P<pk>\d+)/$', views.repost, name='repost'),
+    re_path(r'delete/repost/(?P<pk>\d+)/$', views.DeleteRepost.as_view(), name='delete_repost'),
 ]

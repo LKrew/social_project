@@ -1,0 +1,10 @@
+{% extends 'posts/post_base.html' %}
+{% load bootstrap5 %}
+{% block content %}
+<h1>Are You Sure You Want To Repost This Post</h1>
+ <form method="POST">
+    {% bootstrap_form  form %}
+    {% csrf_token %}
+    <input type="submit" class="btn-lt" value="Post">
+</form>
+{% endblock content %}

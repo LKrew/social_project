@@ -5,8 +5,15 @@
     <div class="contianer">
         
         {% for post in post_list %}
-            {% include 'posts/_post.html' %}
+            
+            {% if post.is_post %}
+                {% include 'posts/_post.html' %}
+            {% else %}
+                {% include 'posts/_repost_list.html' %}
+            {% endif %}
+                
         {% endfor %}
+
             
     </div>
 {% endblock post_content %}

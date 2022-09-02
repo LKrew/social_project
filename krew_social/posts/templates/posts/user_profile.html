@@ -11,14 +11,20 @@
     {% else %}
     <a href="#" class="btn btn-outline-dark">Follow</a>
     {% endif %}
-        
-
 {% endblock profile %}
     
 
 {% block post_content %}
+  
+    
     {% for post in post_list %}
         {% include 'posts/_post.html' %}
-    {% endfor %}    
+    {% endfor %}
+        
+
+    {% for repost in reposts %}
+        {% include 'posts/_repost.html' %}
+    {% endfor %}
+            
 {% endblock post_content %}
     

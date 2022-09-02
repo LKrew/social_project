@@ -13,7 +13,8 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
     like_count = models.PositiveIntegerField(default=0)
     comments_on_post = models.ForeignKey('posts.Comment', related_name='comments_on_post', on_delete=models.CASCADE, null=True)
-
+    reposts = models.ForeignKey('posts.Repost', related_name='reposts', on_delete=models.CASCADE, null=True)
+    is_post = models.BooleanField(default=True)
     def __str__(self) -> str:
         return self.message
     
@@ -25,13 +26,24 @@ class Post(models.Model):
         ordering = ['-created_at']
 
 class LikedPost(models.Model):
-    user = models.ForeignKey(User, related_name='userlikes',on_delete=models.CASCADE)
+    author = models.ForeignKey(User, related_name='userlikes',on_delete=models.CASCADE)
     post = models.ForeignKey('posts.Post', on_delete=models.CASCADE)
     liked_date = models.DateTimeField(auto_now_add=True)
 
 
     def __str__(self):
         return self.post.message + " liked by " + self.user.username
+
+class Repost(models.Model):
+    post = models.ForeignKey(Post, related_name='repost', on_delete=models.CASCADE)
+    author = models.ForeignKey(User, related_name='reposter', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_post = models.BooleanField(default=False)
+    def __str__(self):
+        return self.author.username + " reposted " + self.post.author.username + "'s post"
+    
+    class Meta:
+        ordering = ['-created_at']
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments',on_delete=models.CASCADE)
@@ -45,7 +57,7 @@ class Comment(models.Model):
         return self.text
 
 class LikedComment(models.Model):
-    user = models.ForeignKey(User, related_name='userlikescomment',on_delete=models.CASCADE)
+    author = models.ForeignKey(User, related_name='userlikescomment',on_delete=models.CASCADE)
     comment = models.ForeignKey('posts.Comment', on_delete=models.CASCADE)
     liked_date = models.DateTimeField(auto_now_add=True)
 

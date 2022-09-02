@@ -4,25 +4,29 @@ a.nav-link .dropdown-toggle{
 
 .jumbotron {
     margin: auto;
-    padding: 2rem 1rem;
+    padding: 0.75rem 0.75rem;
     margin-top: 2rem;
     background-color: darkgrey;
     border-radius: .3rem;
     width: 75% !important;
   }
 .jumbotron2 {
-margin: auto;
-padding: 2rem 1rem;
-margin-top: 2rem;
-background-color: grey;
-border-radius: .3rem;
-color: white;
+    margin: auto;
+    padding: 0.75rem 0.75rem;
+    margin-top: none;
+    background-color: grey;
+    border-radius: .3rem;
+    color: white;
 }
 body{
     padding-top: 0px;
 }
 .comment-btn{
     margin-top: .25rem;
+}
+
+.repost{
+    text-decoration: none;
 }
 
 .post_content{

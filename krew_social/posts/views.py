@@ -1,23 +1,36 @@
 from django.views.generic import ListView, CreateView, DeleteView, DetailView
-from posts import models
+from posts.models import Post, LikedPost, Comment, LikedComment, Repost
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.http  import Http404, HttpResponseRedirect
-from braces.views import SelectRelatedMixin
-from . import models, forms
+from . import forms
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, redirect, render
-
+from itertools import chain
 # Create your views here.
 
 User = get_user_model()
 
 class PostList(LoginRequiredMixin,ListView):
-    model = models.Post
+    model = Post
+    template_name = 'posts/post_list.html'
+
+    def get_queryset(self): 
+        posts = Post.objects.all()
+        reposts = Repost.objects.all()
+        post_list = sorted(chain(posts, reposts),key = lambda instance : instance.created_at)
+        return post_list
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        posts = Post.objects.all()
+        reposts = Repost.objects.all()
+        context['post_list'] = sorted(chain(posts, reposts),key = lambda instance : instance.created_at, reverse=True)
+        return context
 
 class UserPostList(LoginRequiredMixin,ListView):
-    model = models.Post
+    model = Post
     template_name = 'posts/user_profile.html'
 
     def get_queryset(self):
@@ -29,13 +42,14 @@ class UserPostList(LoginRequiredMixin,ListView):
             return self.post_user.posts.all()
         
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(UserPostList, self).get_context_data(**kwargs)
         context['post_user'] = self.post_user
+        context['reposts'] = Repost.objects.select_related('author').filter(author__username__iexact=self.kwargs.get('username'))
         return context
 
-class NewPost(LoginRequiredMixin,SelectRelatedMixin,CreateView):
+class NewPost(LoginRequiredMixin,CreateView):
     fields = ['message']
-    model = models.Post
+    model = Post
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -43,9 +57,10 @@ class NewPost(LoginRequiredMixin,SelectRelatedMixin,CreateView):
         form.instance.author = self.request.user
         self.object.save()
         return super().form_valid(form)
+
     
 class DeletePost(LoginRequiredMixin, DeleteView):
-    model = models.Post
+    model = Post
     success_url = '/posts/post_list/'
 
     def get_queryset(self):
@@ -54,27 +69,38 @@ class DeletePost(LoginRequiredMixin, DeleteView):
     def form_valid(self, *args, **kwargs):
         return super().delete(*args, **kwargs)
 
+class DeleteComment(LoginRequiredMixin, DeleteView):
+    model = Comment
+    
+    def get_success_url(self) -> str:
+        return reverse('posts:posts')
+
+    def get_queryset(self):
+        return super().get_queryset()
+
+    def form_valid(self, *args, **kwargs):
+        return super().delete(*args, **kwargs)
+
+class DeleteRepost(DeleteView):
+    model = Repost
+
+    def get_success_url(self) -> str:
+        return reverse('posts:posts')
+    
+    def get_queryset(self):
+        return super().get_queryset()
+
+    def form_valid(self, *args, **kwargs):
+        return super().delete(*args, **kwargs)
+
 class SinglePost(LoginRequiredMixin, DetailView):
-    model = models.Post
+    model = Post
 
-
-# class NewComment(LoginRequiredMixin,CreateView):
-#     fields = ['text']
-#     model = models.Comment
-#     template_name = 'posts/comment_form.html'
-
-#     def form_valid(self, form):
-#         self.object = form.save(commit=False)
-#         print(self.request)
-#         self.object.post = 
-#         form.instance.author = self.request.user
-#         self.object.save()
-#         return super().form_valid(form)
     
 @login_required
 def new_comment(request, pk):
     #pk = request.POST.get('pk')
-    post = get_object_or_404(models.Post, pk=pk)
+    post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
         form = forms.CommentForm(request.POST)
         if form.is_valid():
@@ -88,14 +114,30 @@ def new_comment(request, pk):
     return render(request, 'posts/comment_form.html', {'form': form})
 
 @login_required
+def repost(request, pk):
+    if request.method == "POST":
+
+        user = User.objects.get(username=request.user.username)
+        
+        post = Post.objects.get(pk=pk)
+
+        repost = Repost(author=user, post=post)
+        
+        #adds user to Post 
+        post.save()
+        repost.save()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required
 def like_post(request, pk):
     if request.method == "POST":
         #make sure user can't like the post more than once. 
         user = User.objects.get(username=request.user.username)
         #find whatever post is associated with like
-        post = models.Post.objects.get(pk=pk)
+        post = Post.objects.get(pk=pk)
 
-        newLike = models.LikedPost(user=user, post=post)
+        newLike = LikedPost(author=user, post=post)
         newLike.alreadyLiked = True
 
         post.like_count += 1
@@ -111,9 +153,9 @@ def unlike_post(request, pk):
         #make sure user can't like the post more than once. 
         user = User.objects.get(username=request.user.username)
         #find whatever post is associated with like
-        post = models.Post.objects.get(pk=pk)
+        post = Post.objects.get(pk=pk)
 
-        newLike = models.LikedPost(user=user, post=post)
+        newLike = LikedPost(author=user, post=post)
         newLike.alreadyLiked = True
 
         post.like_count -= 1
@@ -130,9 +172,9 @@ def like_comment(request, pk):
         #make sure user can't like the post more than once. 
         user = User.objects.get(username=request.user.username)
         #find whatever post is associated with like
-        comment = models.Comment.objects.get(pk=pk)
+        comment = Comment.objects.get(pk=pk)
 
-        newLike = models.LikedComment(user=user, comment=comment)
+        newLike = LikedComment(author=user, comment=comment)
         newLike.alreadyLiked = True
 
         comment.like_count += 1
@@ -148,9 +190,9 @@ def unlike_comment(request, pk):
         #make sure user can't like the post more than once. 
         user = User.objects.get(username=request.user.username)
         #find whatever post is associated with like
-        comment = models.Comment.objects.get(pk=pk)
+        comment = Comment.objects.get(pk=pk)
 
-        newLike = models.LikedComment(user=user, comment=comment)
+        newLike = LikedComment(author=user, comment=comment)
         newLike.alreadyLiked = True
 
         comment.like_count -= 1

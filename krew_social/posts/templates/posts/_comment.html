@@ -2,7 +2,7 @@
     <div class="jumbotron">
         <h5 class="media-heading">
         <span class="username">
-            <a href="{% url 'posts:profile' username=comment.author.username %}">@{{comment.author.username}}</a>
+            <a class="username"href="{% url 'posts:profile' username=comment.author.username %}">@{{comment.author.username}}</a>
         </span>
         </h5>
         <p class="post_content">{{comment.text}}</p>
@@ -25,8 +25,8 @@
                 {% endif %}
             </form>
             <li class="nav-item">
-                {% if user.is_authenticated and post.author == user %}
-                <a href="#" class="nav-link btn btn-outline-danger">delete post</a>
+                {% if user.is_authenticated and comment.author == user %}
+                <a href="{% url 'posts:delete_comment' pk=comment.pk %}" class="nav-link btn btn-outline-danger">delete comment</a>
             {% endif %}
             </li>
             </ul>
