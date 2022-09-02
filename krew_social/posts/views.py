@@ -17,10 +17,10 @@ class PostList(LoginRequiredMixin,ListView):
     template_name = 'posts/post_list.html'
 
     def get_queryset(self): 
-        posts = Post.objects.all()
-        reposts = Repost.objects.all()
-        post_list = sorted(chain(posts, reposts),key = lambda instance : instance.created_at)
-        return post_list
+        self.posts = Post.objects.all()
+        self.reposts = Repost.objects.all()
+        self.post_list = sorted(chain(self.posts, self.reposts),key = lambda instance : instance.created_at)
+        return self.post_list
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,9 +42,11 @@ class UserPostList(LoginRequiredMixin,ListView):
             return self.post_user.posts.all()
         
     def get_context_data(self, **kwargs):
-        context = super(UserPostList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['post_user'] = self.post_user
-        context['reposts'] = Repost.objects.select_related('author').filter(author__username__iexact=self.kwargs.get('username'))
+        posts = Post.objects.select_related('author').filter(author__username__iexact=self.kwargs.get('username'))
+        reposts = Repost.objects.select_related('author').filter(author__username__iexact=self.kwargs.get('username'))
+        context['post_list'] = sorted(chain(posts, reposts),key = lambda instance : instance.created_at, reverse=True)
         return context
 
 class NewPost(LoginRequiredMixin,CreateView):

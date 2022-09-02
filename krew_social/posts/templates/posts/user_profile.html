@@ -5,25 +5,26 @@
     <h1>@{{post_user.username}}</h1>
     <p>{{post_user.userprofile.pronouns}}</p>
     <p>{{post_user.userprofile.bio}}</p>
+
+        
     
     {% if user == post_user %}
     <a href="{% url 'accounts:edit_profile' pk=user.id %}" class="btn btn-outline-dark">edit profile</a>
-    {% else %}
-    <a href="#" class="btn btn-outline-dark">Follow</a>
     {% endif %}
+    <form method="POST"action="{% url 'accounts:follow_user' pk=post_user.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-dark">Follow {{post_user.followers.count}}</button>
+    </form>
 {% endblock profile %}
     
 
 {% block post_content %}
-  
-    
-    {% for post in post_list %}
-        {% include 'posts/_post.html' %}
-    {% endfor %}
-        
-
-    {% for repost in reposts %}
-        {% include 'posts/_repost.html' %}
+    {% for post in post_list %}    
+        {% if post.is_post %}
+            {% include 'posts/_post.html' %}
+        {% else %}
+            {% include 'posts/_repost.html' %} 
+        {% endif %}
     {% endfor %}
             
 {% endblock post_content %}
